@@ -1,10 +1,12 @@
 var state = 0;
+var ouch;
 var ant;
 var donk;
 var moom;
 var nut;
 var mar;
 var rev;
+var small;
 var jumpman;
 var marPos;
 let moons = [];
@@ -13,9 +15,11 @@ var timey;
 var lives;
 let grace = 1;
 let graceTimer = 60;
+let timer = 0;
 
 function preload() {
   ant = loadSound("FlyMetotheAntLoop.mp3");
+  ouch = loadSound("Oof.mp3");
 }
 
 function setup() {
@@ -27,6 +31,7 @@ function setup() {
   nut = loadImage("NUT.png");
   mar = loadImage("SuperMario.png");
   rev = loadImage("SuperMarioReverse.png");
+  small = loadImage("SmallAnt.png");
   ant.play();
   ant.pause();
   jumpman = loadFont("Jumpman.ttf");
@@ -67,7 +72,8 @@ function draw() {
       fill("black");
       textSize(80);
       textFont(jumpman);
-      text("Congrats!\n You Nutted!", width / 2, height / 2);
+      image(small, width/2, 100);
+      text("Congrats!\n You Nutted!", width / 2, 300);
       break;
     case 5:
       ant.pause();
@@ -83,8 +89,9 @@ function draw() {
 
 function setGame() {
   lives = 3;
+  timer = 600;
   marPos = createVector(width / 2, height);
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
     moons.push(new Moon());
   }
   nutson = new Nut();
@@ -95,7 +102,8 @@ function playGame() {
   textFont(jumpman);
   textSize(20);
   text("Lives: " + lives, 40, 20);
-  for (let i = 0; i < moons.length; i++) {
+  text("Time: " + timer/60, width-40, 20);
+    for (let i = 0; i < moons.length; i++) {
     moons[i].display();
     moons[i].move();
     if (moons[i].pos.dist(marPos) < 75) {
@@ -107,7 +115,7 @@ function playGame() {
 
   if ((nutson.pos.dist(marPos) < 75) && (grace == 1)) {
     lives--;
-    //ouch.play();
+    ouch.play();
     grace = 0;
   }
 
@@ -117,10 +125,11 @@ function playGame() {
     grace = 1;
     graceTimer = 150;
   }
-
+  timer --;
   checkForKeys();
-  if (moons.length = 0) state = 4;
+  if (moons.length < 1) state = 4;
   if (lives < 1) state = 5;
+  if(timer<0) state = 5;
 
 }
 
@@ -142,8 +151,8 @@ class Moon {
 
   // constructor and attributes
   constructor() {
-    this.pos = createVector(width / 2, height / 2);
-    this.vel = createVector(random(-4, 4), random(-4, 4));
+    this.pos = createVector(width / 2, height/2);
+    this.vel = createVector(random(-6, 6), random(-6, 6));
   }
 
   // methods
